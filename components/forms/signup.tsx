@@ -1,8 +1,8 @@
 "use client"
 import React, { EventHandler, useState } from 'react'
-import { Label } from './ui/label'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
 import axios from 'axios'
 import { toast } from 'sonner'
 
@@ -12,6 +12,7 @@ function Signup() {
         email:"",
         password:""
     })
+    const [loading,setLoading] = useState<boolean>(false)
 
     const onChangeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -21,9 +22,12 @@ function Signup() {
         }));
     };
 
+    
+
     const signUpHandler = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(input)
+        setLoading(true)
         try {
             const res = await axios.post('http://localhost:8888/api/v1/user/register',input,{
                 headers:{
@@ -34,17 +38,25 @@ function Signup() {
 
             if(res.data.success){
                 toast.success(res.data.message)
+                setInput({
+                    username:"",
+                    email:"",
+                    password:""
+                })
+                setLoading(false)
+                
             }
         } catch (error) {
             console.log(error)
             //@ts-ignore
             toast.error(error.response.data.message)
+            setLoading(false)
         }
     };
     
   return (
     <div className='flex items-center justify-center w-screen h-screen'>
-        <form onSubmit={signUpHandler} className='shadow-lg flex flex-col gap-2 p-8'>
+        <form onSubmit={signUpHandler} className='shadow-lg flex flex-col gap-2 p-5 rounded-lg lg:p-8'>
             <div className='my-4'>
                 <h1 className='text-center font-bold text-xl'>logo</h1>
                 <p className='text-sm text-center'>Signup to see photos and videos from your frnds</p>
@@ -82,7 +94,7 @@ function Signup() {
             />
         </div>
 
-        <Button>Sign up</Button>
+        <Button disabled={loading}>Sign up</Button>
         </form>
 
       
